@@ -13,6 +13,10 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+app.get('/',(req,res)=>{
+  res.send("hello")
+})
+
 app.post("/gpt", async (request, response) => {
   const { chats } = request.body;
   console.log(chats)
