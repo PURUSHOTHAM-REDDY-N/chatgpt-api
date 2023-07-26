@@ -42,3 +42,5 @@ app.post("/gpt", async (request, response) => {
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Server listening on port ${port}`));
+
+console.log('Test log');
