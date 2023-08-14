@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require('cors');
 
 require("dotenv").config();
-const { Configuration, OpenAIApi } = require("openai");
+const {Configuration, OpenAIApi} = require("openai");
 
 const app = express();
 app.use(cors());
@@ -13,34 +13,73 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-app.get('/',(req,res)=>{
-  res.send("hello")
-})
+app.post("/gpt", async (req, res) => {
+  try {
+    const {prompt} = req.body;
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: `
+              ${prompt}
+            `,
+      max_tokens: 3000,
+      // temperature: 0,
+      // top_p: 1.0,
+      // frequency_penalty: 0.0,
+      // presence_penalty: 0.0,
+      // stop: ["\n"],
+    });
 
-app.post("/gpt", async (request, response) => {
-  const { chats } = request.body;
-  console.log(chats)
-
-  const result = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content: "You are a Conditional Fund Raising Assistant. You can help campaign creators to define the creative conditions for their campaigns.",
-      },
-      ...chats,
-    ],
-  });
-
-  response.json({
-    output: result.data.choices[0].message,
-  });
+    return res.status(200).json({
+      success: true,
+      data: response.data.choices[0].text,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      error: error.response
+          ? error.response.data
+          : "There was an issue on the server",
+    });
+  }
 });
 
+app.post('/createTasks', async (req, res)=> {
+  try {
+    // throw QueryEmptyError
+    const reqBody = req.body
+
+    // console.log(body);
+
+    const response = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: `
+              generate three tasks for the person '${reqBody.person}' based on these keywords '${reqBody.tasks}'.
+              Return an array of json objects as response which contains two properties: challenge_name(task name), challenge_description'
+            `,
+      max_tokens: 3000,
+      // temperature: 0,
+      // top_p: 1.0,
+      // frequency_penalty: 0.0,
+      // presence_penalty: 0.0,
+      // stop: ["\n"],
+    });
+    // console.log(response.data.choices[0].text);
+    return res.status(200).json(
+        {
+          data: response.data.choices[0].text,
+        }
+    );
+  } catch (e) {
+    console.log(e);
+    return res.status(400).json({
+      success: false,
+      error: e
+    })
+  }
+
+})
 
 
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => console.log(`Server listening on port ${port}`));
-
-console.log('Test log');
