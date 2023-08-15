@@ -53,9 +53,9 @@ app.post('/createTasks', async (req, res)=> {
     const response = await openai.createCompletion({
       model: "text-davinci-003",
       prompt: `
-              generate three tasks for the person '${reqBody.person}' based on these keywords '${reqBody.tasks}'.
-              Return an array of json objects as response which contains two properties: challenge_name(task name), challenge_description'
-            `,
+              generate appropriate tasks for the person '${reqBody.person}' based on the number of keywords in '${reqBody.tasks}'.
+              Put the response into JSON with keys challenge_name, challenge_description
+              `,
       max_tokens: 3000,
       // temperature: 0,
       // top_p: 1.0,
@@ -63,17 +63,31 @@ app.post('/createTasks', async (req, res)=> {
       // presence_penalty: 0.0,
       // stop: ["\n"],
     });
-    // console.log(response.data.choices[0].text);
+
+    const formattedResponse = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt: `
+          Format the below ${response.data.choices[0].text} to proper JSON Object 
+              `,
+      max_tokens: 3000,
+      // temperature: 0,
+      // top_p: 1.0,
+      // frequency_penalty: 0.0,
+      // presence_penalty: 0.0,
+      // stop: ["\n"],
+    });
+    console.log(JSON.parse(formattedResponse.data.choices[0].text));
+
     return res.status(200).json(
         {
-          data: response.data.choices[0].text,
+          data: formattedResponse.data.choices[0].text,
         }
     );
   } catch (e) {
     console.log(e);
     return res.status(400).json({
       success: false,
-      error: e
+      error: e.type
     })
   }
 
