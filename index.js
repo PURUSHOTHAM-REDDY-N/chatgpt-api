@@ -54,7 +54,8 @@ app.post('/createTasks', async (req, res)=> {
       model: "text-davinci-003",
       prompt: `
               generate appropriate tasks for the person '${reqBody.person}' based on the number of keywords in '${reqBody.tasks}'.
-              Put the response into JSON with keys challenge_name, challenge_description
+              The task must be in the form of '${reqBody.person}' must do (some task)
+              give me the reply in json format with Name field and Description field enclosed in Campaigns array
               `,
       max_tokens: 3000,
       // temperature: 0,
@@ -64,23 +65,23 @@ app.post('/createTasks', async (req, res)=> {
       // stop: ["\n"],
     });
 
-    const formattedResponse = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: `
-          Format the below ${response.data.choices[0].text} to proper JSON Object 
-              `,
-      max_tokens: 3000,
-      // temperature: 0,
-      // top_p: 1.0,
-      // frequency_penalty: 0.0,
-      // presence_penalty: 0.0,
-      // stop: ["\n"],
-    });
-    console.log(JSON.parse(formattedResponse.data.choices[0].text));
+    // const formattedResponse = await openai.createCompletion({
+    //   model: "text-davinci-003",
+    //   prompt: `
+    //       Format the below ${response.data.choices[0].text} to proper JSON Object
+    //           `,
+    //   max_tokens: 3000,
+    //   // temperature: 0,
+    //   // top_p: 1.0,
+    //   // frequency_penalty: 0.0,
+    //   // presence_penalty: 0.0,
+    //   // stop: ["\n"],
+    // });
+    // console.log(JSON.parse(formattedResponse.data.choices[0].text));
 
     return res.status(200).json(
         {
-          data: formattedResponse.data.choices[0].text,
+          data: response.data.choices[0].text,
         }
     );
   } catch (e) {
