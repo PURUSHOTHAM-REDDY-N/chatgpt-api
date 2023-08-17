@@ -102,7 +102,7 @@ app.post('/createTasks', async (req, res) => {
 
         return res.status(200).json(
             {
-                Campaigns: CampaignsResponse.Campaigns || CampaignsResponse || undefined,
+                Campaigns: CampaignsResponse?.Campaigns || CampaignsResponse || undefined,
                 chat: chats,
                 person: reqBody.person,
                 tasks: reqBody.tasks,
