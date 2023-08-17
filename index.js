@@ -62,28 +62,28 @@ app.post('/createTasks', async (req, res) => {
 
         // console.log('After \n', chats);
         chats ?
-        response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: prompt,
-            max_tokens: 3000,
-            // temperature: 0,
-            // top_p: 1.0,
-            // frequency_penalty: 0.0,
-            // presence_penalty: 0.0,
-            // stop: ["\n"],
-        })
-        :
-        response = await openai.createChatCompletion({
-            model: "text-davinci-003",
-            messages: chats,
-            prompt: prompt,
-            max_tokens: 3000,
-            // temperature: 0,
-            // top_p: 1.0,
-            // frequency_penalty: 0.0,
-            // presence_penalty: 0.0,
-            // stop: ["\n"],
-        });
+            response = await openai.createCompletion({
+                model: "text-davinci-003",
+                prompt: prompt,
+                max_tokens: 3000,
+                // temperature: 0,
+                // top_p: 1.0,
+                // frequency_penalty: 0.0,
+                // presence_penalty: 0.0,
+                // stop: ["\n"],
+            })
+            :
+            response = await openai.createChatCompletion({
+                model: "text-davinci-003",
+                messages: chats,
+                prompt: prompt,
+                max_tokens: 3000,
+                // temperature: 0,
+                // top_p: 1.0,
+                // frequency_penalty: 0.0,
+                // presence_penalty: 0.0,
+                // stop: ["\n"],
+            });
         console.log('response data = ', response.data);
 
         chats.push({
@@ -94,18 +94,17 @@ app.post('/createTasks', async (req, res) => {
         try {
             CampaignsResponse = JSON.parse(response.data.choices[0].text.replace(/'/ig, '"'));
 
+        }catch (e){
+            CampaignsResponse = [];
+        }
+
             console.log('Result Campaigns = ', CampaignsResponse)
 
-        } catch (e) {
-            return res.status(500).json({
-                error: 'Error in parsing'
-            })
-        }
 
 
         return res.status(200).json(
             {
-                Campaigns: CampaignsResponse.Campaigns || CampaignsResponse,
+                Campaigns: CampaignsResponse.Campaigns || CampaignsResponse || undefined,
                 chat: chats,
                 person: reqBody.person,
                 tasks: reqBody.tasks,
