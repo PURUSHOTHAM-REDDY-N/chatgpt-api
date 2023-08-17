@@ -44,10 +44,9 @@ app.post("/gpt", async (req, res) => {
 });
 
 app.post('/createTasks', async (req, res) => {
-    let lastChat;
+    const reqBody = req.body
     try {
         // throw QueryEmptyError
-        const reqBody = req.body
         let chats = reqBody.chat || [];
         console.log('ReqBody is \n', reqBody);
         // console.log('Before \n', chats);
@@ -94,12 +93,11 @@ app.post('/createTasks', async (req, res) => {
         try {
             CampaignsResponse = JSON.parse(response.data.choices[0].text.replace(/'/ig, '"'));
 
-        }catch (e){
+        } catch (e) {
             CampaignsResponse = undefined;
         }
 
-            console.log('Result Campaigns = ', CampaignsResponse)
-
+        console.log('Result Campaigns = ', CampaignsResponse)
 
 
         return res.status(200).json(
@@ -114,8 +112,8 @@ app.post('/createTasks', async (req, res) => {
         (e) {
         console.log(e);
         return res.status(400).json({
-            success: false,
-            error: e.type
+            status: false,
+            error: e.message
         })
     }
 
