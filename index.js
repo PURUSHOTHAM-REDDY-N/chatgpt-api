@@ -95,7 +95,7 @@ app.post('/createTasks', async (req, res) => {
             CampaignsResponse = JSON.parse(response.data.choices[0].text.replace(/'/ig, '"'));
 
         }catch (e){
-            CampaignsResponse = [];
+            CampaignsResponse = undefined;
         }
 
             console.log('Result Campaigns = ', CampaignsResponse)
